@@ -18,7 +18,8 @@
         "helmet": "^4.2.0",
         "mongoose": "^5.11.8",
         "morgan": "^1.10.0",
-        "rimraf": "^3.0.2"
+        "rimraf": "^3.0.2",
+        "uuid": "^3.4.0"
     },
     "scripts": {
         "clean": "node clean_wallet.js",
