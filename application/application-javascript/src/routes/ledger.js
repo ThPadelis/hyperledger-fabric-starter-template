@@ -14,6 +14,19 @@ class LedgerRoutes {
 
         app.post('/init', controller._initialize);
 
+        app.post("/policies", controller._getPolicies);
+
+
+        app.post("/policies/:id", controller._getPolicy);
+
+        app.put("/policies/:id", async (request, response, next) => {
+
+        });
+
+        app.delete("/policies/:id", async (request, response, next) => {
+
+        });
+
         app.use('**', async (request, response, next) => {
             return response.status(404).json({ message: "Not found!" })
         });
