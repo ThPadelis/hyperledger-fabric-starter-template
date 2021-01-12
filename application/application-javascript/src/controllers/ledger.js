@@ -9,7 +9,7 @@ const chaincodeName = "trapeze";
 
 class LedgerController {
     async _initialize(request, response, next) {
-        const { userID: org1UserId, organization: mspOrg1 } = request.body;
+        const { userID: org1UserId = "admin", organization: mspOrg1 = "Org1MSP" } = request.body;
 
         console.log(`Ledger is about to be initialized ${mspOrg1}`);
 

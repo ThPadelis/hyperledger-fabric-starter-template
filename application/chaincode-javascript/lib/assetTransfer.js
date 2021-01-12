@@ -83,31 +83,45 @@ class AssetTransfer extends Contract {
     async UpdatePolicy(ctx, id, creationDate, dataSubject, personalDataCategory, processing, purpose, recipient, location, duration) {
         const exists = await this.PolicyExists(ctx, id);
         if (!exists) throw new Error(`The policy ${id} does not exist`);
+        const policyString = await this.ReadPolicy(ctx, id);
+        const policy = JSON.parse(policyString);
 
-        // overwriting original policy with new policy
-        const updatedPolicy = {
-            "PolicyId": id,
-            "CreationDate": creationDate,
-            "HasDataSubject": dataSubject,
-            "OwnerID": ctx.clientIdentity.getID().split("::")[1].split("CN=")[1],
-            "HasPersonalDataCategory": personalDataCategory,
-            "HasProcessing": processing,
-            "HasPurpose": purpose,
-            "HasRecipient": recipient,
-            "HasStorage": {
-                "HasLocation": location,
-                "HasDuration": duration,
-                "DurationInDays": duration
-            }
-        };
-        return ctx.stub.putState(id, Buffer.from(JSON.stringify(updatedPolicy)));
+        if (policy.OwnerID === _id) {
+            // overwriting original policy with new policy
+            const updatedPolicy = {
+                "PolicyId": id,
+                "CreationDate": creationDate,
+                "HasDataSubject": dataSubject,
+                "OwnerID": ctx.clientIdentity.getID().split("::")[1].split("CN=")[1],
+                "HasPersonalDataCategory": personalDataCategory,
+                "HasProcessing": processing,
+                "HasPurpose": purpose,
+                "HasRecipient": recipient,
+                "HasStorage": {
+                    "HasLocation": location,
+                    "HasDuration": duration,
+                    "DurationInDays": duration
+                }
+            };
+            return ctx.stub.putState(id, Buffer.from(JSON.stringify(updatedPolicy)));
+        } else {
+            throw new Error(`Policy ${id} does not belong to this user. Update is prohibited`)
+        }
     }
 
     // DeletePolicy deletes an given policy from the world state.
     async DeletePolicy(ctx, id) {
         const exists = await this.PolicyExists(ctx, id);
         if (!exists) throw new Error(`The policy ${id} does not exist`);
-        return ctx.stub.deleteState(id);
+        const policyString = await this.ReadPolicy(ctx, id);
+        const policy = JSON.parse(policyString);
+
+        const _id = ctx.clientIdentity.getID().split("::")[1].split("CN=")[1];
+        if (policy.OwnerID === _id) {
+            return ctx.stub.deleteState(id);
+        } else {
+            throw new Error(`Policy ${id} does not belong to this user. Delete is prohibited`);
+        }
     }
 
     // PolicyExists returns true when policy with given ID exists in world state.
