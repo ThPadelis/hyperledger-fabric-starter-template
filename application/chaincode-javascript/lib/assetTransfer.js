@@ -86,6 +86,8 @@ class AssetTransfer extends Contract {
         const policyString = await this.ReadPolicy(ctx, id);
         const policy = JSON.parse(policyString);
 
+        const _id = ctx.clientIdentity.getID().split("::")[1].split("CN=")[1];
+
         if (policy.OwnerID === _id) {
             // overwriting original policy with new policy
             const updatedPolicy = {
