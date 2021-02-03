@@ -237,7 +237,7 @@ class LedgerController {
                 const contract = network.getContract(chaincodeName);
 
                 console.log("\n--> Evaluate Transaction: DeletePolicy, function deletes a policy from the ledger");
-                const policy = await contract.evaluateTransaction("DeletePolicy", policyID);
+                const policy = await contract.submitTransaction("DeletePolicy", policyID);
                 console.log("*** Result: committed");
 
                 return response.status(200).json({ message: "Policy deleted" });
